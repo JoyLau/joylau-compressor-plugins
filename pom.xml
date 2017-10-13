@@ -9,13 +9,6 @@
     <description>一款基于YUI Compressor 打包压缩 js css html 的Maven插件</description>
     <url>https://github.com/JoyLau/joylau-compressor-plugins</url>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
-
     <developers>
         <developer>
             <name>JoyLau</name>
@@ -63,6 +56,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.8</version>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>
