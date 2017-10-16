@@ -5,6 +5,6 @@ package cn.joylau.code;
  * cn.joylau.code
  * greatapp
  */
-public interface Compressor {
-    public abstract void compress(String fileName);
+public interface Compressor<T> {
+    void compress(String fileName,T config);
 }

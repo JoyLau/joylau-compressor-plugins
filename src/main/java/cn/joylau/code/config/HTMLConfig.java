@@ -14,4 +14,8 @@ public class HTMLConfig {
     private String dir;
     private String include;
     private String exclude;
+    private boolean removeComments = true;
+    private boolean removeIntertagSpaces = false;
+    private boolean compressJavaScript = false;
+    private boolean compressCss = false;
 }

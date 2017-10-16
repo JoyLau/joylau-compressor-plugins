@@ -1,6 +1,7 @@
 package cn.joylau.code.compressor;
 
 import cn.joylau.code.Compressor;
+import cn.joylau.code.config.JSConfig;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,22 +19,15 @@ import java.io.*;
 @Data
 @NoArgsConstructor
 @Log
-public class JSCompressor implements Compressor {
+public class JSCompressor implements Compressor<JSConfig> {
 
-    //是否混淆
-    private boolean munge = true;
-    //保留所有的分号
-    private boolean preserveAllSemiColons = false;
-    //禁用自带的所有优化措施
-    private boolean disableOptimizations = false;
     //在一个指定的列数之后插入一个换行（一般是不需要的）
     private int lineBreak = -1;
 
     private ErrorReporter errorReporter = new DefaultErrorReporter();
 
-
     @Override
-    public void compress(String fileName) {
+    public void compress(String fileName,JSConfig config) {
         Reader in = null;
         Writer out = null;
         try {
@@ -41,7 +35,7 @@ public class JSCompressor implements Compressor {
             in = new InputStreamReader(new FileInputStream(fileName), charsetName);
             JavaScriptCompressor compressor = new JavaScriptCompressor(in, errorReporter);
             out = new OutputStreamWriter(new FileOutputStream(fileName), charsetName);
-            compressor.compress(out, lineBreak, true, false, preserveAllSemiColons, disableOptimizations);
+            compressor.compress(out, lineBreak, config.isMunge(), false, config.isPreserveAllSemiColons(), config.isDisableOptimizations());
         } catch (IOException e) {
             log.info("js compress error");
             e.printStackTrace();

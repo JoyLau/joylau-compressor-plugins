@@ -92,7 +92,7 @@ public class ResourcesCompressorMojo extends AbstractMojo {
                     if (file instanceof File) {
                         FileInfo source = getFileSize(((File) file));
                         CSSCompressor cssCompressor = new CSSCompressor();
-                        cssCompressor.compress(((File) file).getPath());
+                        cssCompressor.compress(((File) file).getPath(),cssConfig);
                         FileInfo target = getFileSize(((File) file));
                         getLog().info(compressorInfo(source, target));
                     }
@@ -120,7 +120,7 @@ public class ResourcesCompressorMojo extends AbstractMojo {
                     if (file instanceof File) {
                         FileInfo source = getFileSize(((File) file));
                         JSCompressor jsCompressor = new JSCompressor();
-                        jsCompressor.compress(((File) file).getPath());
+                        jsCompressor.compress(((File) file).getPath(),jsConfig);
                         FileInfo target = getFileSize(((File) file));
                         getLog().info(compressorInfo(source, target));
                     }
@@ -149,7 +149,7 @@ public class ResourcesCompressorMojo extends AbstractMojo {
                     if (file instanceof File) {
                         FileInfo source = getFileSize(((File) file));
                         HTMLCompressor htmlCompressor = new HTMLCompressor();
-                        htmlCompressor.compress(((File) file).getPath());
+                        htmlCompressor.compress(((File) file).getPath(),htmlConfig);
                         FileInfo target = getFileSize(((File) file));
                         getLog().info(compressorInfo(source, target));
                     }
@@ -204,7 +204,7 @@ public class ResourcesCompressorMojo extends AbstractMojo {
     private String compressorInfo(FileInfo source, FileInfo target) {
         DecimalFormat df = new DecimalFormat("#.00");
         long compressorLength = source.getFileLength() - target.getFileLength();
-        String rate = df.format((float) compressorLength / target.getFileLength() * 100);
+        String rate = df.format((float) compressorLength / source.getFileLength() * 100);
         return target.getFileName() + "(" + source.getFileSize() + "==>" + target.getFileSize() + "," + rate + "%)";
 
     }

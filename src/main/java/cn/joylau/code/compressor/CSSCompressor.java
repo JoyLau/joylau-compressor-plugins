@@ -1,6 +1,7 @@
 package cn.joylau.code.compressor;
 
 import cn.joylau.code.Compressor;
+import cn.joylau.code.config.CSSConfig;
 import com.yahoo.platform.yui.compressor.CssCompressor;
 import lombok.Data;
 import lombok.extern.java.Log;
@@ -14,13 +15,13 @@ import java.io.*;
  */
 @Log
 @Data
-public class CSSCompressor implements Compressor {
+public class CSSCompressor implements Compressor<CSSConfig> {
 
     //在一个指定的列数之后插入一个换行（一般是不需要的）
     private int lineBreak = -1;
 
     @Override
-    public void compress(String fileName) {
+    public void compress(String fileName, CSSConfig cssConfig) {
         Reader in = null;
         Writer out = null;
         try {

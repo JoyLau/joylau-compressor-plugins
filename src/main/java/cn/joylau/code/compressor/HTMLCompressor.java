@@ -1,6 +1,7 @@
 package cn.joylau.code.compressor;
 
 import cn.joylau.code.Compressor;
+import cn.joylau.code.config.HTMLConfig;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressorStatistics;
 import com.googlecode.htmlcompressor.compressor.YuiCssCompressor;
@@ -21,7 +22,7 @@ import java.util.regex.Pattern;
  * cn.joylau.code
  * greatapp
  */
-public class HTMLCompressor implements Compressor {
+public class HTMLCompressor implements Compressor<HTMLConfig> {
 
     public static final String JS_COMPRESSOR_YUI = "yui";
     public static final String JS_COMPRESSOR_CLOSURE = "closure";
@@ -74,9 +75,9 @@ public class HTMLCompressor implements Compressor {
     private boolean removeMultiSpaces = true;
 
     //optional settings
-    private boolean removeIntertagSpaces = true;
+    private boolean removeIntertagSpaces = false;
     private boolean removeQuotes = false;
-    private boolean compressJavaScript = true;
+    private boolean compressJavaScript = false;
     private boolean compressCss = false;
     private boolean simpleDoctype = false;
     private boolean removeScriptAttributes = false;
@@ -168,8 +169,16 @@ public class HTMLCompressor implements Compressor {
     protected static final Pattern tempSkipPattern = Pattern.compile("%%%~COMPRESS~SKIP~(\\d+?)~%%%");
     protected static final Pattern tempLineBreakPattern = Pattern.compile("%%%~COMPRESS~LT~(\\d+?)~%%%");
 
+    private void initConfig(HTMLConfig htmlConfig){
+        setRemoveComments(htmlConfig.isRemoveComments());
+        setRemoveIntertagSpaces(htmlConfig.isRemoveIntertagSpaces());
+        setCompressCss(htmlConfig.isCompressCss());
+        setCompressJavaScript(htmlConfig.isCompressJavaScript());
+    }
+
     @Override
-    public void compress(String fileName) {
+    public void compress(String fileName,HTMLConfig htmlConfig) {
+        initConfig(htmlConfig);
         String html = null;
         try {
             html = FileUtils.fileRead(fileName);
@@ -1428,7 +1437,6 @@ public class HTMLCompressor implements Compressor {
      *
      * <p>If no compressor is set {@link YuiJavaScriptCompressor} will be used by default.
      *
-     * @param javaScriptCompressor {@link compressor} implementation that will be used for inline JavaScript compression
      *
      * @see YuiJavaScriptCompressor
      * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
@@ -1462,7 +1470,6 @@ public class HTMLCompressor implements Compressor {
      *
      * <p>If no compressor is set {@link YuiCssCompressor} will be used by default.
      *
-     * @param cssCompressor {@link compressor} implementation that will be used for inline CSS compression
      *
      * @see YuiCssCompressor
      * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
@@ -1724,7 +1731,6 @@ public class HTMLCompressor implements Compressor {
 
     /**
      * Returns {@link HtmlCompressorStatistics} object containing statistics of the last HTML compression, if enabled.
-     * Should be called after {@link #compress(String)}
      *
      * @return {@link HtmlCompressorStatistics} object containing last HTML compression statistics
      *
