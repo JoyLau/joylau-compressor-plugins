@@ -74,9 +74,9 @@ public class HTMLCompressor implements Compressor {
     private boolean removeMultiSpaces = true;
 
     //optional settings
-    private boolean removeIntertagSpaces = false;
+    private boolean removeIntertagSpaces = true;
     private boolean removeQuotes = false;
-    private boolean compressJavaScript = false;
+    private boolean compressJavaScript = true;
     private boolean compressCss = false;
     private boolean simpleDoctype = false;
     private boolean removeScriptAttributes = false;

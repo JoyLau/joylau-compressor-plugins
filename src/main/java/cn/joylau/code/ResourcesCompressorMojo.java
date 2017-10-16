@@ -11,8 +11,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -78,7 +78,7 @@ public class ResourcesCompressorMojo extends AbstractMojo {
     /**
      * 压缩css文件
      */
-    private void compressCSS(){
+    private void compressCSS() {
         if (null == cssConfigs || null == cssConfigs[0].getDir()) {
             return;
         }
@@ -86,19 +86,20 @@ public class ResourcesCompressorMojo extends AbstractMojo {
         try {
             /*压缩css*/
             for (CSSConfig cssConfig : cssConfigs) {
-                List list = FileUtils.getFiles(new File(outDir.getPath() + cssConfig.getDir()), cssConfig.getInclude
-                        (), cssConfig.getExclude());
+                List list = findFiles(new File(outDir.getPath() + cssConfig.getDir()), cssConfig.getInclude
+                        (), cssConfig.getExclude(), new ArrayList<>());
                 for (Object file : list) {
                     if (file instanceof File) {
                         FileInfo source = getFileSize(((File) file));
                         CSSCompressor cssCompressor = new CSSCompressor();
                         cssCompressor.compress(((File) file).getPath());
                         FileInfo target = getFileSize(((File) file));
-                        getLog().info(compressorInfo(source,target));
+                        getLog().info(compressorInfo(source, target));
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            getLog().error("css compress error");
             e.printStackTrace();
         }
     }
@@ -106,26 +107,27 @@ public class ResourcesCompressorMojo extends AbstractMojo {
     /**
      * 压缩js文件
      */
-    private void compressJS(){
+    private void compressJS() {
         if (null == jsConfigs || null == jsConfigs[0].getDir()) {
             return;
         }
         getLog().info("开始压缩JS文件...");
         try {
             for (JSConfig jsConfig : jsConfigs) {
-                List list = FileUtils.getFiles(new File(outDir.getPath() + jsConfig.getDir()), jsConfig.getInclude
-                        (), jsConfig.getExclude());
+                List list = findFiles(new File(outDir.getPath() + jsConfig.getDir()), jsConfig.getInclude
+                        (), jsConfig.getExclude(), new ArrayList<>());
                 for (Object file : list) {
                     if (file instanceof File) {
                         FileInfo source = getFileSize(((File) file));
                         JSCompressor jsCompressor = new JSCompressor();
                         jsCompressor.compress(((File) file).getPath());
                         FileInfo target = getFileSize(((File) file));
-                        getLog().info(compressorInfo(source,target));
+                        getLog().info(compressorInfo(source, target));
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            getLog().error("js compress error");
             e.printStackTrace();
         }
     }
@@ -134,26 +136,27 @@ public class ResourcesCompressorMojo extends AbstractMojo {
     /**
      * 压缩html文件
      */
-    private void compressHTML(){
+    private void compressHTML() {
         if (null == htmlConfigs || null == htmlConfigs[0].getDir()) {
             return;
         }
         getLog().info("开始压缩HTML文件...");
         try {
             for (HTMLConfig htmlConfig : htmlConfigs) {
-                List list = FileUtils.getFiles(new File(outDir.getPath() + htmlConfig.getDir()), htmlConfig.getInclude
-                        (), htmlConfig.getExclude());
+                List list = findFiles(new File(outDir.getPath() + htmlConfig.getDir()), htmlConfig.getInclude
+                        (), htmlConfig.getExclude(), new ArrayList<>());
                 for (Object file : list) {
                     if (file instanceof File) {
                         FileInfo source = getFileSize(((File) file));
                         HTMLCompressor htmlCompressor = new HTMLCompressor();
                         htmlCompressor.compress(((File) file).getPath());
                         FileInfo target = getFileSize(((File) file));
-                        getLog().info(compressorInfo(source,target));
+                        getLog().info(compressorInfo(source, target));
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            getLog().error("html compress error");
             e.printStackTrace();
         }
     }
@@ -161,6 +164,7 @@ public class ResourcesCompressorMojo extends AbstractMojo {
 
     /**
      * 获取文件大小，等信息
+     *
      * @param file 目标问价
      * @return FileInfo
      */
@@ -192,24 +196,44 @@ public class ResourcesCompressorMojo extends AbstractMojo {
 
     /**
      * 压缩信息
+     *
      * @param source 源文件
      * @param target 压缩文件
      * @return 压缩信息
      */
-    private String compressorInfo(FileInfo source,FileInfo target){
+    private String compressorInfo(FileInfo source, FileInfo target) {
         DecimalFormat df = new DecimalFormat("#.00");
         long compressorLength = source.getFileLength() - target.getFileLength();
-        String rate = df.format((float)compressorLength/target.getFileLength()*100);
-        return target.getFileName()+"("+source.getFileSize()+"==>"+target.getFileSize()+","+rate+"%)";
+        String rate = df.format((float) compressorLength / target.getFileLength() * 100);
+        return target.getFileName() + "(" + source.getFileSize() + "==>" + target.getFileSize() + "," + rate + "%)";
 
     }
 
-    public static void main(String[] args){
+
+    /**
+     * 递归查找目标文件
+     *
+     * @param directory 源文件
+     * @param includes  包括文件
+     * @param excludes  排除文件
+     * @param list      目标文件集合
+     * @return 目标文件集合
+     */
+    private List<File> findFiles(File directory, String includes, String excludes, List<File> list) {
         try {
-            List list  = FileUtils.getFiles(new File("H:\\DevWorkspace\\media\\joylau-media\\target\\classes\\static\\js"),"*.js","",false);
-            System.out.println(list.size());
-        } catch (IOException e) {
+            List fileList = FileUtils.getFiles(directory, includes, excludes);
+            for (Object path : fileList) {
+                list.add(new File(path.toString()));
+            }
+            List dirList = FileUtils.getDirectoryNames(directory, "*", "", true);
+            for (Object path : dirList) {
+                findFiles(new File(path.toString()), includes, excludes, list);
+            }
+        } catch (Exception e) {
+            getLog().error("find file or directory error");
             e.printStackTrace();
         }
+        return list;
     }
+
 }

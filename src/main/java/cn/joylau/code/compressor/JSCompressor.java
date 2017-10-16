@@ -20,8 +20,8 @@ import java.io.*;
 @Log
 public class JSCompressor implements Compressor {
 
-    //仅压缩，不混淆
-    private boolean noMunge = false;
+    //是否混淆
+    private boolean munge = true;
     //保留所有的分号
     private boolean preserveAllSemiColons = false;
     //禁用自带的所有优化措施
@@ -34,15 +34,14 @@ public class JSCompressor implements Compressor {
 
     @Override
     public void compress(String fileName) {
-
         Reader in = null;
         Writer out = null;
         try {
             String charsetName = "UTF-8";
             in = new InputStreamReader(new FileInputStream(fileName), charsetName);
-            JavaScriptCompressor compressor = new JavaScriptCompressor (in, errorReporter);
+            JavaScriptCompressor compressor = new JavaScriptCompressor(in, errorReporter);
             out = new OutputStreamWriter(new FileOutputStream(fileName), charsetName);
-            compressor.compress(out, lineBreak, noMunge, false, preserveAllSemiColons, disableOptimizations);
+            compressor.compress(out, lineBreak, true, false, preserveAllSemiColons, disableOptimizations);
         } catch (IOException e) {
             log.info("js compress error");
             e.printStackTrace();
@@ -65,13 +64,14 @@ public class JSCompressor implements Compressor {
         }
     }
 
-    public static class DefaultErrorReporter implements ErrorReporter{
+    public static class DefaultErrorReporter implements ErrorReporter {
 
         public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
             if (line < 0) {
                 System.err.println("[WARNING] JSCompressor: \"" + message + "\" during JavaScript compression");
             } else {
-                System.err.println("[WARNING] JSCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset + "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
+                System.err.println("[WARNING] JSCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset
+                        + "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
             }
         }
 
@@ -79,11 +79,13 @@ public class JSCompressor implements Compressor {
             if (line < 0) {
                 System.err.println("[ERROR] JSCompressor: \"" + message + "\" during JavaScript compression");
             } else {
-                System.err.println("[ERROR] JSCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset + "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
+                System.err.println("[ERROR] JSCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset +
+                        "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
             }
         }
 
-        public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
+        public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int
+                lineOffset) {
             error(message, sourceName, line, lineSource, lineOffset);
             return new EvaluatorException(message);
         }

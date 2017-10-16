@@ -4,7 +4,7 @@
     <groupId>cn.joylau.code</groupId>
     <artifactId>joylau-compressor-plugins</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0.RELEASE</version>
+    <version>1.2.RELEASE</version>
     <name>joylau-compressor-plugins Maven Mojo</name>
     <description>一款基于YUI Compressor 打包压缩 js css html 的Maven插件</description>
     <url>https://github.com/JoyLau/joylau-compressor-plugins</url>
